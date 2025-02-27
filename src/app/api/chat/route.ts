@@ -2,7 +2,7 @@ import { Message, streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getContext } from "@/utils/context"; 
 import songData from "@/data/songData";
-
+import { SongObject } from "@/data/songData";
 
 
 export async function POST(req: Request) {
