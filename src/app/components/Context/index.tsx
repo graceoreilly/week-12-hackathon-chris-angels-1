@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { urls } from "./urls";
+import { emojis } from "./emojis";
 import UrlButton from "./UrlButton";
 import { Card, ICard } from "./Card";
 import { clearIndex, crawlDocument } from "./utils";
@@ -10,8 +10,12 @@ interface ContextProps {
   selected: string[] | null;
 }
 
+type EmojiObject = {
+  emojiString: string;
+};
+
 export const Context: React.FC<ContextProps> = ({ className, selected }) => {
-  const [entries, setEntries] = useState(urls);
+  const [entries, setEntries] = useState(emojis);
   const [cards, setCards] = useState<ICard[]>([]);
 
   const [splittingMethod, setSplittingMethod] = useState("markdown");
@@ -32,21 +36,9 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
     </label>
   );
 
-  const buttons = entries.map((entry, key) => (
-    <div className="" key={`${key}-${entry.loading}`}>
-      <UrlButton
-        entry={entry}
-        onClick={() =>
-          crawlDocument(
-            entry.url,
-            setEntries,
-            setCards,
-            splittingMethod,
-            chunkSize,
-            overlap
-          )
-        }
-      />
+  const buttons = entries.map((emoji: EmojiObject, key: number) => (
+    <div className="" key={key}>
+      <UrlButton emojiString={emoji.emojiString} />
     </div>
   ));
 
