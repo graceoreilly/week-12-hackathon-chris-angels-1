@@ -3,6 +3,7 @@ import { emojis } from "./emojis";
 import UrlButton from "./UrlButton";
 import { Card, ICard } from "./Card";
 import { clearIndex, crawlDocument } from "./utils";
+import { timeOfDay } from "./timeOfDay";
 
 import { Button } from "./Button";
 interface ContextProps {
@@ -14,8 +15,13 @@ type EmojiObject = {
   emojiString: string;
 };
 
+type timeOfDayObject = {
+  timeOfDayString: string;
+}
+
 export const Context: React.FC<ContextProps> = ({ className, selected }) => {
-  const [entries, setEntries] = useState(emojis);
+  const [emojiEntries, setEmojiEntries] = useState<EmojiObject[]>(emojis);
+  const [timeOfDayEntries, setTimeOfDayEntries] = useState<timeOfDayObject[]>(timeOfDay);
   const [cards, setCards] = useState<ICard[]>([]);
 
   const [splittingMethod, setSplittingMethod] = useState("markdown");
@@ -36,9 +42,15 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
     </label>
   );
 
-  const buttons = entries.map((emoji: EmojiObject, key: number) => (
+  const buttons = emojiEntries.map((emoji: EmojiObject, key: number) => (
     <div className="" key={key}>
       <UrlButton emojiString={emoji.emojiString} />
+    </div>
+  ));
+
+  const timeOfbuttons = timeOfDayEntries.map((timeOfDay: timeOfDayObject, key: number) => (
+    <div className="" key={key}>
+      <UrlButton timeOfDayString={timeOfDay.timeOfDayString} />
     </div>
   ));
 
@@ -50,6 +62,9 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
         <div className="flex flex-col items-start lg:flex-row w-full lg:flex-wrap p-2">
           {buttons}
         </div>
+        <div className="flex flex-col items-start lg:flex-row w-full lg:flex-wrap p-2 bg-blue-100 border border-blue-500">
+          {timeOfbuttons}
+        </div>
         <div className="flex-grow w-full px-4">
           <Button
             className="w-full my-2 uppercase active:scale-[98%] transition-transform duration-100"
@@ -57,7 +72,11 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
               backgroundColor: "#4f6574",
               color: "white",
             }}
-            onClick={() => clearIndex(setEntries, setCards)}
+            onClick={() => {
+              setEmojiEntries([]);
+              setTimeOfDayEntries([]);
+              setCards([]);
+            }}
           >
             Clear Index
           </Button>
