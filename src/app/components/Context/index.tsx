@@ -54,16 +54,16 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
           <Button
             className="w-full my-2 uppercase active:scale-[98%] transition-transform duration-100"
             style={{
-              backgroundColor: "#4f6574",
-              color: "white",
+              backgroundColor: "#F5BAB1",
+              color: "black",
             }}
             onClick={() => clearIndex(setEntries, setCards)}
           >
             Clear Index
           </Button>
         </div>
-        <div className="flex p-2"></div>
-        <div className="text-left w-full flex flex-col rounded-b-lg bg-gray-600 p-3 subpixel-antialiased">
+        {/* <div className="flex p-2"></div>
+        <div className="text-left w-full flex flex-col rounded-b-lg bg-[#F5BAB1] p-3 subpixel-antialiased">
           <DropdownLabel htmlFor="splittingMethod">
             Splitting Method:
           </DropdownLabel>
@@ -98,7 +98,7 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
                   Overlap: {overlap}
                 </DropdownLabel>
                 <input
-                  className="p-2 bg-gray-700"
+                  className="p-2 bg-[gray-700]"
                   type="range"
                   id="overlap"
                   min={1}
@@ -108,7 +108,7 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
       <div className="flex flex-wrap w-full">
         {cards &&

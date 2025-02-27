@@ -16,7 +16,7 @@ interface IURLButtonProps {
 
 const UrlButton: FC<IURLButtonProps> = ({ emojiString }) => (
   <div key={emojiString} className="pr-2 lg:flex-grow">
-    <Button className={"relative overflow-hidden w-full my-1 lg:my-2 mx-2"}>
+    <Button className={"relative overflow-hidden w-full my-1 lg:my-2 mx-2 bg-white"}>
       <div className="relative text-3xl">{emojiString}</div>
     </Button>
   </div>
