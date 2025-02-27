@@ -1,6 +1,9 @@
 import { Message, streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { getContext } from "@/utils/context";
+import { getContext } from "@/utils/context"; 
+import songData from "@/data/songData";
+
+
 
 export async function POST(req: Request) {
   try {
@@ -13,23 +16,42 @@ export async function POST(req: Request) {
     // Get the context from the last message
     const context = await getContext(lastMessage.content, "");
 
+    // Prepare song data in a format that's easy for the LLM to process
+    const simplifiedSongData = songData.map((song: SongObject) => ({
+      artist: song.artist,
+      songTitle: song.songTitle,
+      mood: song.mood,
+      timeOfDay: song.timeOfDay,
+      weather: song.weather,
+      season: song.season,
+      activity: song.activity,
+      energy: song.energy,
+      occasions: song.occasions,
+      emotionalImpact: song.emotionalImpact
+    }));
+
     const prompt = [
       {
-        role: "system",
-        content: `AI assistant is a brand new, powerful, human-like artificial intelligence.
-      The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
-      AI is a well-behaved and well-mannered individual.
-      AI is always friendly, kind, and inspiring, and he is eager to provide vivid and thoughtful responses to the user.
-      AI has the sum of all knowledge in their brain, and is able to accurately answer nearly any question about any topic in conversation.
-      AI assistant is a big fan of Pinecone and Vercel.
-      START CONTEXT BLOCK
-      ${context}
-      END OF CONTEXT BLOCK
-      AI assistant will take into account any CONTEXT BLOCK that is provided in a conversation.
-      If the context does not provide the answer to question, the AI assistant will say, "I'm sorry, but I don't know the answer to that question".
-      AI assistant will not apologize for previous responses, but instead will indicated new information was gained.
-      AI assistant will not invent anything that is not drawn directly from the context.
-      `,
+        role: 'system',
+        content: `You are an AI music assistant that recommends songs based on user input.
+
+        ### SONG RECOMMENDATION INSTRUCTIONS
+        - Users will provide information about their mood, time of day, and what they're doing.
+        - Your task is to select ONE most appropriate song from the available collection.
+        - First, analyze the user's input to understand their current context and emotional needs.
+        - Then, find songs that match multiple criteria from their input (mood, activity, time of day, etc.).
+        - For your recommendation, provide the song title, artist, and a brief explanation of why this song fits their current situation.
+        - Make your recommendation conversational and personalized, as if you're a thoughtful friend.
+        - If you can't find a perfect match, recommend the closest option and explain your reasoning.
+
+        ### AVAILABLE SONGS
+        ${JSON.stringify(simplifiedSongData, null, 2)}
+
+        ### CONTEXT FROM USER QUERY
+        ${context}
+
+        Remember to only recommend songs from this specific collection, and always explain why your suggestion fits their current situation.
+        `,
       },
     ];
 
