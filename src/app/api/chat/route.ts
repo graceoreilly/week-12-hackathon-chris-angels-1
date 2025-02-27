@@ -57,6 +57,7 @@ export async function POST(req: Request) {
 
     // Ask OpenAI for a streaming chat completion given the prompt
     const response = await streamText({
+      // @ts-ignore - Bypass type checking for conflicting AI SDK versions
       model: openai("gpt-4o-mini"),
       messages: [
         ...prompt,
