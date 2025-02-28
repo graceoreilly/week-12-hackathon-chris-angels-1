@@ -1,9 +1,9 @@
 .pulse1 {
-    animation: pulse 10s infinite;
+    animation: pulse 5s infinite;
   }
   
   .pulse2 {
-    animation: pulse 10s infinite 5s; 
+    animation: pulse 5s infinite 2.5s; 
   }
   
   @keyframes pulse {
@@ -14,5 +14,53 @@
       transform: scale(0.8); 
     }
   }
+
+  .jitter1 {
+    animation: jitter 0.4s infinite;
+    animation-timing-function: steps(10, end);
+  }
+  
+  @keyframes jitter {
+    0% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(-1px, -1px);
+    }
+    50% {
+      transform: translate(1px, -1px);
+    }
+    75% {
+      transform: translate(-1px, 1px);
+    }
+    100% {
+      transform: translate(1px, 1px);
+    }
+  }
+  
+  
+  .jitter2 {
+    animation: jitter 0.4s infinite 0.1s;
+    animation-timing-function: steps(10, end);
+  }
+  
+  @keyframes jitter {
+    0% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(-1px, 1px);
+    }
+    50% {
+      transform: translate(1px, -1px);
+    }
+    75% {
+      transform: translate(-1px, -1px);
+    }
+    100% {
+      transform: translate(1px, 1px);
+    }
+  }
+  
   
   
