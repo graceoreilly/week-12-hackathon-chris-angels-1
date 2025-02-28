@@ -23,7 +23,7 @@ const EmojiButton = ({
     <div key={emojiString} className="pr-2 lg:flex-grow">
       <Button
         className={`relative overflow-hidden w-full my-1 lg:my-2 mx-2 ${
-          isActive ? "bg-blue-300" : "bg-gray-200"
+          isActive ? "bg-blue-300" : "bg-[#F5BAB1]"
         }`}
         onClick={() => toggleButton(value)}
       >
