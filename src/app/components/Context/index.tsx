@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { emojis } from "./emojis";
-import UrlButton from "./UrlButton";
+import EmojiButton from "./EmojiButton";
+import { Card, ICard } from "./Card";
+import { clearIndex, crawlDocument } from "./utils";
+
 import { weather } from "./Weather";
 import { activities } from "./Activities";
 import { Button } from "./Button";
@@ -11,40 +14,81 @@ interface ContextProps {
   onSelectionChange?: (type: string, value: string) => void;
 }
 
+type EmojiObject = {
+  emojiString: string;
+  value: string;
+};
 
-export const Context: React.FC<ContextProps> = ({ 
-  className, 
-  selected, 
-  onSelectionChange 
+export const Context: React.FC<ContextProps> = ({
+  className,
+  selected,
+  onSelectionChange,
 }) => {
   const [entries, setEntries] = useState(emojis);
+  const [cards, setCards] = useState<ICard[]>([]);
+  const [activeEmotion, setActiveEmotion] = useState<string | null>(null);
   const [selectedWeather, setSelectedWeather] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
+  const [splittingMethod, setSplittingMethod] = useState("markdown");
+  const [chunkSize, setChunkSize] = useState(256);
+  const [overlap, setOverlap] = useState(1);
+
+  // Scroll to selected card
+  useEffect(() => {
+    const element = selected && document.getElementById(selected[0]);
+    element?.scrollIntoView({ behavior: "smooth" });
+  }, [selected]);
+
+  //Update emotion on emoji change
+  function handleEmotionClick(value: string) {
+    setActiveEmotion((prev) => (prev === value ? null : value));
+  }
+
   // Handler for weather selection
-    const handleWeatherClick = (weatherType: string) => {
-      setSelectedWeather(weatherType);
-      if (onSelectionChange) {
-        onSelectionChange('weather', weatherType);
-      }
-    };
-  
+  const handleWeatherClick = (weatherType: string) => {
+    setSelectedWeather(weatherType);
+    if (onSelectionChange) {
+      onSelectionChange("weather", weatherType);
+    }
+  };
+
   // Handler for activity selection
-    const handleActivityClick = (activityType: string) => {
-      setSelectedActivity(activityType);
-      if (onSelectionChange) {
-        onSelectionChange('activity', activityType);
-      }
-    };
-  
+  const handleActivityClick = (activityType: string) => {
+    setSelectedActivity(activityType);
+    if (onSelectionChange) {
+      onSelectionChange("activity", activityType);
+    }
+  };
+
+  const DropdownLabel: React.FC<
+    React.PropsWithChildren<{ htmlFor: string }>
+  > = ({ htmlFor, children }) => (
+    <label htmlFor={htmlFor} className="text-white p-2 font-bold">
+      {children}
+    </label>
+  );
 
   // Render emoji buttons (if still needed)
-  const buttons = entries.map((emoji: { emojiString: string }, key: number) => (
-    <div className="" key={key}>
-      <UrlButton emojiString={emoji.emojiString} />
-    </div>
-  ));
-  
+  const buttons = entries.map(
+    (
+      emoji: {
+        value: string;
+        emojiString: string;
+      },
+      key: number
+    ) => (
+      <div key={key}>
+        <EmojiButton
+          emojiString={emoji.emojiString}
+          handleClick={handleEmotionClick}
+          value={emoji.value}
+          isActive={activeEmotion === emoji.value}
+        />
+      </div>
+    )
+  );
+
   return (
     <div className={className}>
       {buttons}
@@ -57,12 +101,15 @@ export const Context: React.FC<ContextProps> = ({
         {weather.map((weatherItem, key: number) => {
           // Get the weather type and emoji from the current item
           const weatherType = Object.keys(weatherItem)[0];
-          const emojiWeather = weatherItem[weatherType as keyof typeof weatherItem];
-          
+          const emojiWeather =
+            weatherItem[weatherType as keyof typeof weatherItem];
+
           return (
-            <Button 
-              key={key} 
-              className={`px-5 py-3 ${selectedWeather === weatherType ? 'ring-2 ring-blue-500' : ''}`}
+            <Button
+              key={key}
+              className={`px-5 py-3 ${
+                selectedWeather === weatherType ? "ring-2 ring-blue-500" : ""
+              }`}
               value={weatherType}
               onClick={handleWeatherClick}
             >
@@ -79,12 +126,15 @@ export const Context: React.FC<ContextProps> = ({
       <div className="flex flex-wrap justify-center items-center gap-2 w-full">
         {activities.map((activityItem, key: number) => {
           const activityType = Object.keys(activityItem)[0];
-          const emojiActivity = activityItem[activityType as keyof typeof activityItem];
-          
+          const emojiActivity =
+            activityItem[activityType as keyof typeof activityItem];
+
           return (
-            <Button 
-              key={key} 
-              className={`px-5 py-3 ${selectedActivity === activityType ? 'ring-2 ring-blue-500' : ''}`}
+            <Button
+              key={key}
+              className={`px-5 py-3 ${
+                selectedActivity === activityType ? "ring-2 ring-blue-500" : ""
+              }`}
               value={activityType}
               onClick={handleActivityClick}
             >
@@ -97,13 +147,7 @@ export const Context: React.FC<ContextProps> = ({
   );
 };
 
-
-
-
-
-
 /** Begining of old code **/
-
 
 // import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 // import { emojis } from "./emojis";
@@ -120,19 +164,17 @@ export const Context: React.FC<ContextProps> = ({
 //   onSelectionChange?: (type: string, value: string) => void; // Add callback for selection changes
 // }
 
-
 // // NEW: Generic type for context items (weather, activities)
 // type ContextItem = {
 //   [key: string]: string;
 // };
-
 
 // // OLD: Contex items ( emoji, weather, activites )
 // type EmojiObject = {
 //   emojiString: string;
 // };
 
-// type WeatherObject = 
+// type WeatherObject =
 //   | { sunny: string }
 //   | { rainy: string }
 //   | { snowy: string }
@@ -153,12 +195,10 @@ export const Context: React.FC<ContextProps> = ({
 // | { sleeping: string }
 // |  { cleaning: string };
 
-
-
-// export const Context: React.FC<ContextProps> = ({ 
-//   className, 
-//   selected, 
-//   onSelectionChange 
+// export const Context: React.FC<ContextProps> = ({
+//   className,
+//   selected,
+//   onSelectionChange
 // }) => {
 //   const [entries, setEntries] = useState(emojis);
 //   // const [weatherState, setWeatherState] = useState(weather);
@@ -195,10 +235,10 @@ export const Context: React.FC<ContextProps> = ({
 //         // Get the weather type and emoji from the current item
 //         const weatherType = Object.keys(weatherItem)[0];
 //         const emojiWeather = weatherItem[weatherType as keyof WeatherObject];
-        
+
 //         return (
-//           <Button 
-//             key={key} 
+//           <Button
+//             key={key}
 //             className={`px-5 py-3 ${selectedWeather === weatherType ? 'ring-2 ring-blue-500' : ''}`}
 //             value={weatherType}
 //             onClick={handleWeatherClick}
@@ -210,17 +250,16 @@ export const Context: React.FC<ContextProps> = ({
 //     </div>
 //   );
 
-
 //   // create activities buttons
 // const activityButtons = (
 //   <div className="flex flex-wrap justify-center items-center gap-2 w-full">
 //     {activityState.map((activityItem, key: number) => {
 //       const activityType = Object.keys(activityItem)[0];
 //       const emojiActivity = activityItem[activityType as keyof ActivitiesObject];
-      
+
 //       return (
-//         <Button 
-//           key={key} 
+//         <Button
+//           key={key}
 //           className={`px-5 py-3 ${selectedActivity === activityType ? 'ring-2 ring-blue-500' : '' }`}
 //           value={activityType}
 //           onClick={handleActivityClick}
@@ -233,7 +272,6 @@ export const Context: React.FC<ContextProps> = ({
 //   </div>
 // );
 
-  
 //   // Don't forget to add the return statement at the end of your component
 //   return (
 //     <div className={className}>
@@ -246,34 +284,27 @@ export const Context: React.FC<ContextProps> = ({
 //     </div>
 //   );
 
-
 // };
 
+/* End of old code */
 
+// const [splittingMethod, setSplittingMethod] = useState("markdown");
+// const [chunkSize, setChunkSize] = useState(256);
+// const [overlap, setOverlap] = useState(1);
 
+// // Scroll to selected card
+// useEffect(() => {
+//   const element = selected && document.getElementById(selected[0]);
+//   element?.scrollIntoView({ behavior: "smooth" });
+// }, [selected]);
 
-    /* End of old code */
-
-
-
-
-  // const [splittingMethod, setSplittingMethod] = useState("markdown");
-  // const [chunkSize, setChunkSize] = useState(256);
-  // const [overlap, setOverlap] = useState(1);
-
-  // // Scroll to selected card
-  // useEffect(() => {
-  //   const element = selected && document.getElementById(selected[0]);
-  //   element?.scrollIntoView({ behavior: "smooth" });
-  // }, [selected]);
-
-  // const DropdownLabel: React.FC<
-  //   React.PropsWithChildren<{ htmlFor: string }>
-  // > = ({ htmlFor, children }) => (
-  //   <label htmlFor={htmlFor} className="text-white p-2 font-bold">
-  //     {children}
-  //   </label>
-  // );
+// const DropdownLabel: React.FC<
+//   React.PropsWithChildren<{ htmlFor: string }>
+// > = ({ htmlFor, children }) => (
+//   <label htmlFor={htmlFor} className="text-white p-2 font-bold">
+//     {children}
+//   </label>
+// );
 
 // return (
 //   <div
