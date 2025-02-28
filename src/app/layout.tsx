@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Pinecone - Vercel AI SDK Example",
-  description: "Pinecone - Vercel AI SDK Example",
+  title: "coneVibes",
+  description: "coneVibes, baby!",
 };
 
 import "../global.css";
