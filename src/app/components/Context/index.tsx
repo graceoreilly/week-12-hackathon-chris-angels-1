@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { emojis } from "./emojis";
-import UrlButton from "./UrlButton";
+import EmojiButton from "./EmojiButton";
 import { Card, ICard } from "./Card";
 import { clearIndex, crawlDocument } from "./utils";
 
@@ -12,11 +12,13 @@ interface ContextProps {
 
 type EmojiObject = {
   emojiString: string;
+  value: string;
 };
 
 export const Context: React.FC<ContextProps> = ({ className, selected }) => {
   const [entries, setEntries] = useState(emojis);
   const [cards, setCards] = useState<ICard[]>([]);
+  const [activeEmotion, setActiveEmotion] = useState<string | null>(null);
 
   const [splittingMethod, setSplittingMethod] = useState("markdown");
   const [chunkSize, setChunkSize] = useState(256);
@@ -28,6 +30,11 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
     element?.scrollIntoView({ behavior: "smooth" });
   }, [selected]);
 
+  //Update emotion on emoji change
+  function handleEmotionClick(value: string) {
+    setActiveEmotion((prev) => (prev === value ? null : value));
+  }
+
   const DropdownLabel: React.FC<
     React.PropsWithChildren<{ htmlFor: string }>
   > = ({ htmlFor, children }) => (
@@ -37,8 +44,13 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
   );
 
   const buttons = entries.map((emoji: EmojiObject, key: number) => (
-    <div className="" key={key}>
-      <UrlButton emojiString={emoji.emojiString} />
+    <div key={key}>
+      <EmojiButton
+        emojiString={emoji.emojiString}
+        handleClick={handleEmotionClick}
+        value={emoji.value}
+        isActive={activeEmotion === emoji.value}
+      />
     </div>
   ));
 
