@@ -20,7 +20,7 @@ const Page: React.FC = () => {
       setGotMessages(true);
     },
   });
-//comment
+
   const prevMessagesLengthRef = useRef(messages.length);
 
   const handleMessageSubmit = async (e: FormEvent<HTMLFormElement>) => {
