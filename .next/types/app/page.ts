@@ -1,4 +1,4 @@
-// File: C:\Users\Kim\Documents\VS Code Portfolio\SchoolOfCode\Week 12\week-12-hackathon-chris-angels-1\src\app\page.tsx
+// File: C:\Users\chris\Documents\SoC\repos\week12\week-12-hackathon-chris-angels-1\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
